@@ -12,13 +12,13 @@
 
 #include "Task.h"
 #include "Scheduler.h" // deals with all the scheduling stuff
-#include "StateHandler.h"
-
-#include "Radio.h"
-#include "GPS.h"
-#include "SDCard.h"
-#include "Photocells.h"
-#include "IMU.h"
+// #include "StateHandler.h"
+//
+// #include "Radio.h"
+// #include "GPS.h"
+// #include "SDCard.h"
+// #include "Photocells.h"
+// #include "IMU.h"
 
 void task1(void){
   static int task1Trigger = 0;
@@ -47,48 +47,53 @@ void task2(){
 }
 
 // Module setup
-#define gpsSerial Serial1
-#define radioSerial Serial2
-const int sdChipSelectPin = 4;
-
-GPS gps(&gpsSerial);
-Radio radio(&radioSerial, 2);
-SDCard sd(sdChipSelectPin);
-Photocells photocells(0, 5);
-IMU imu;
+// #define gpsSerial Serial1
+// #define radioSerial Serial2
+// const int sdChipSelectPin = 4;
+//
+// GPS gps(&gpsSerial);
+// Radio radio(&radioSerial, 2);
+// SDCard sd(sdChipSelectPin);
+// Photocells photocells(0, 5);
+// IMU imu;
 
 // Steven: maybe should use container classes. array/vector?
-const int numModules = 4;
-Module* modules[numModules] = {
-    &gps
-  , &radio
-  , &sd
-  , &photocells
-};
+// const int numModules = 4;
+// Module* modules[numModules] = {
+//     &gps
+//   , &radio
+//   , &sd
+//   , &photocells
+// };
 
-Scheduler scheduler(2 + numModules);
-StateHandler stateHandler(&imu, &gps);
+Scheduler scheduler(2);
+// StateHandler stateHandler(&imu, &gps);
+
+void TC7_Handler(){
+  schedulerTick++;
+  TC_GetStatus(TC2, 1);   // reading this register flips something to ensure the counter can be incremented again
+}
 
 void setup() {
   Serial.begin(115200);
   pinMode(12, OUTPUT);
   pinMode(8, OUTPUT);
   Serial.println("SFUSat weather balloon1 says hi");
+  //
+  // for(Module *module : modules) {
+  //   module->enable();
+  //   module->begin();
+  // }
+  // stateHandler.enable();
+  // stateHandler.begin();
 
-  for(Module *module : modules) {
-    module->enable();
-    module->begin();
-  }
-  stateHandler.enable();
-  stateHandler.begin();
+  // sd.registerModules(modules, numModules);
 
-  sd.registerModules(modules, numModules);
-
-  scheduler.setupISR();
+  // scheduler.setupISR();
   scheduler.addTask(new Task(500,500, &task1));
   scheduler.addTask(new Task(500,100, &task2));
-  scheduler.registerModulesAsTasks(modules, numModules);
-  scheduler.registerStateHandler(&stateHandler);
+  // scheduler.registerModulesAsTasks(modules, numModules);
+  // scheduler.registerStateHandler(&stateHandler);
 }
 
 void loop() {

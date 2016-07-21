@@ -32,7 +32,7 @@ void Scheduler::run() {
     } else {
       bool shouldTaskRun = (systemTick - currTask.lastRun) >= currTask.interval;
       // if tasks in this current system tick all finish early (within the
-      // current tick), Scheduler::run() will execute many times. Without this check, 
+      // current tick), Scheduler::run() will execute many times. Without this check,
       // these tasks will also be run more than once
       bool taskDidNotRunYet = currTask.lastRun < systemTick;
 
@@ -120,9 +120,5 @@ void Scheduler::setupISR() {
   NVIC_EnableIRQ(TC7_IRQn);
 }
 
-void TC7_Handler(){
-  schedulerTick++;
-  TC_GetStatus(TC2, 1);   // reading this register flips something to ensure the counter can be incremented again
-}
-#endif
 
+#endif
