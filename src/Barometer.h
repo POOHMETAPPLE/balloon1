@@ -1,15 +1,18 @@
+#ifndef BAROMETER_H
+#define BAROMETER_H
+
 #include <Arduino.h>    //assuming inclusion of string.h
-#include "Module.h"
 #include <SFE_BMP180.h>
 #include <Wire.h>
+#include "Module.h"
 
 //on Due, attach SDA to 20, SCL to 21 
 
 class Barometer: public Module { 
 	SFE_BMP180 *baromImpl;
-        double temperature, pressure;
+	double temperature, pressure;
 
-	char toWrite[200];             //max buffer size may have to change depending on data
+	char toWrite[100];             //max buffer size may have to change depending on data
 
 public:
 	Barometer();
@@ -21,5 +24,7 @@ public:
 	const char* dataToPersist();
 	const char* getModuleName();
 
-        float getPressure();
+	float getPressure();
 };
+
+#endif // BAROMETER_H
